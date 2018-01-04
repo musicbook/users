@@ -19,6 +19,8 @@ spec:
             value: http://etcd:2379
           - name: KUMULUZEE_CONFIG_ETCD_HOSTS
             value: http://etcd:2379
+          - name: KUMULUZEE_SERVER_BASEURL
+            value: http://169.51.16.117:30977
 
         ports:
         - containerPort: 8090

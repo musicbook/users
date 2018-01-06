@@ -57,7 +57,7 @@ public class UserResource {
 
 
 
-        @GET
+    @GET
     @Path("email/{email}")
     public Response getUserByEmail(@PathParam("email") String email){
         User user=UsersBean.getUserByEmail(email);
@@ -78,7 +78,7 @@ public class UserResource {
     @DELETE
     @Path("email/{email}")
     public Response deleteUserByEmail(@PathParam("email") String email){
-        if(UsersBean.deleteUserByEmail(email)){
+        if(UsersBean.deleteUserByEmail(email,posts_url)){
             return Response.ok().build();
         }
         return Response.status(Response.Status.CONFLICT).build();

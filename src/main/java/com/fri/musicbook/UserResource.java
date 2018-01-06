@@ -4,6 +4,7 @@ package com.fri.musicbook;
 import com.kumuluz.ee.discovery.annotations.DiscoverService;
 import com.kumuluz.ee.discovery.enums.AccessType;
 import com.kumuluz.ee.discovery.utils.DiscoveryUtil;
+import org.eclipse.microprofile.metrics.annotation.Metered;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import java.util.Optional;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("users/")
+@Metered(name = "UserResources")
 public class UserResource {
 
     @Inject
@@ -31,6 +33,26 @@ public class UserResource {
     }
 
     @GET
+    @Path("Bands")
+    public Response getBands(){
+        List<User> bands=UsersBean.getBands();
+        if(bands==null) return Response.status(Response.Status.NOT_FOUND).build();
+
+        return Response.ok(bands).build();
+    }
+
+    @GET
+    @Path("Listeners")
+    public Response getListeners(){
+        List<User> listeners=UsersBean.getListeners();
+        if(listeners==null) return Response.status(Response.Status.NOT_FOUND).build();
+
+        return Response.ok(listeners).build();
+    }
+
+
+
+        @GET
     @Path("email/{email}")
     public Response getUserByEmail(@PathParam("email") String email){
         User user=UsersBean.getUserByEmail(email);
@@ -45,7 +67,7 @@ public class UserResource {
 
             return Response.status(Response.Status.CREATED).entity(user).build();
         }
-        return Response.status( Response.Status.CONFLICT).build();
+        return Response.status(Response.Status.CONFLICT).build();
     }
 
     @DELETE

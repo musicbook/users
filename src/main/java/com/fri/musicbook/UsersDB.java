@@ -5,6 +5,7 @@ import java.util.List;
 
 public class UsersDB {
     private static List<User> users= new ArrayList<User>(){{
+        add(new User(0,"test","test",new ArrayList<>(),new ArrayList<>(),"Listener","test@musicbook.com"));
         add(new User(1,"Jan","Šubelj",new ArrayList<>(),new ArrayList<>(),"Band","janS@musicbook.com"));
         add(new User(2,"Jan","Blatnik",new ArrayList<>(),new ArrayList<>(),"Band","janB@musicbook.com"));
         add(new User(3,"Alojzi","Škof",new ArrayList<>(),new ArrayList<>(),"Listener","alojtiS@lj.com"));

@@ -15,8 +15,10 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.client.Entity.text;
 
@@ -80,5 +82,21 @@ public class UsersBean {
         }
 
         return false;
+    }
+
+
+    public static List<User> getBands(){
+        List<User> allUsers=UsersDB.getUsers();
+
+        List<User> bands = allUsers.stream().filter(u -> u.getTypeOfUser().equals("Band")).collect(Collectors.toList());
+
+        return bands;
+    }
+
+    public static List<User> getListeners(){
+        List<User> allUsers=UsersDB.getUsers();
+        List<User> listeners = allUsers.stream().filter(u -> u.getTypeOfUser().equals("Listener")).collect(Collectors.toList());
+
+        return listeners;
     }
 }

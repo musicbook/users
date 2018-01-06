@@ -4,6 +4,10 @@ package com.fri.musicbook;
 import com.kumuluz.ee.discovery.annotations.DiscoverService;
 import com.kumuluz.ee.discovery.enums.AccessType;
 import com.kumuluz.ee.discovery.utils.DiscoveryUtil;
+import com.kumuluz.ee.logs.LogManager;
+import com.kumuluz.ee.logs.Logger;
+import com.kumuluz.ee.logs.cdi.Log;
+import com.kumuluz.ee.logs.cdi.LogParams;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -15,13 +19,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
+
 @ApplicationScoped
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("users/")
+@Log
 @Metered(name = "UserResources")
 public class UserResource {
-
     @Inject
     @DiscoverService("posts")
     private Optional<URL> posts_url;

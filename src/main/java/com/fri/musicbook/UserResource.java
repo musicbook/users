@@ -52,7 +52,7 @@ public class UserResource {
     @Path("email/{email}")
     public Response deleteUserByEmail(@PathParam("email") String email){
         if(UsersBean.deleteUserByEmail(email)){
-            return Response.status(Response.Status.NO_CONTENT).build();
+            return Response.ok().build();
         }
         return Response.status(Response.Status.CONFLICT).build();
     }

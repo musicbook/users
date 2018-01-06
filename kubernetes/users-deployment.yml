@@ -12,6 +12,7 @@ spec:
       containers:
       - image: cleptes/users:0.01
         name: users
+        imagePullPolicy: Always
         env:
           - name: KUMULUZEE_DISCOVERY_CLUSTER
             value: bluemix

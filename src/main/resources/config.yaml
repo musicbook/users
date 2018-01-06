@@ -19,6 +19,14 @@ kumuluzee:
     http:
       port: 8090
 
+  health:
+    servlet:
+      mapping: /health
+      enabled: true
+    checks:
+      disk-space-health-check:
+        threshold: 1000000000
+
   metrics:
           web-instrumentation:
             - name: metricsEndpoint

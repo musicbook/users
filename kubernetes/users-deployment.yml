@@ -10,7 +10,7 @@ spec:
         app: users
     spec:
       containers:
-      - image: cleptes/users:0.01
+      - image: cleptes/users:0.02
         name: users
         imagePullPolicy: Always
         env:
@@ -24,6 +24,12 @@ spec:
             value: http://169.51.16.117:30977
           - name: KUMULUZEE_VERSION
             value: 1.0.1
+          - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
+            value: jdbc:postgresql://postgres-posts:5440/users
+          - name: KUMULUZEE_DATASOURCES0_USERNAME
+            value: userdb
+          - name: KUMULUZEE_DATASOURCES0_PASSWORD
+            value: postgres
 
         ports:
         - containerPort: 8090

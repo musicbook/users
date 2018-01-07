@@ -1,24 +1,24 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: postgres-posts-deployment
+  name: postgres-users-deployment
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: postgres-posts
+        app: postgres-users
     spec:
       containers:
         - image: centos/postgresql-94-centos7
-          name: postgres-posts
+          name: postgres-users
           env:
             - name: POSTGRESQL_USER
               value: userdb
             - name: POSTGRESQL_PASSWORD
               value: postgres
             - name: POSTGRESQL_DATABASE
-              value: posts
+              value: users
           ports:
           - containerPort: 5432
             protocol: TCP

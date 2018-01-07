@@ -1,21 +1,50 @@
 package com.fri.musicbook;
 
+import org.eclipse.persistence.annotations.UuidGenerator;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
+@Entity(name = "users")
+@NamedQueries(value =
+        {
+                @NamedQuery(name = "users.getAll", query = "SELECT o FROM users o"),
+                @NamedQuery(name = "users.getUser", query = "SELECT o FROM users o WHERE o.id = :id"),
+                @NamedQuery(name = "users.getUserByEmail", query = "SELECT o FROM users o WHERE o.email = :email"),
+                @NamedQuery(name = "users.getListeners", query = "SELECT o FROM users o WHERE o.typeOfUser = 'Listener'"),
+                @NamedQuery(name = "users.getBands", query = "SELECT o FROM users o WHERE o.typeOfUser = 'Band'")
+        })
+@UuidGenerator(name = "idGenerator")
 public class User {
-    private int id;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(generator = "idGenerator")
+    private String id;
+
+    @Column(name = "user_name")
     private String name;
+
+    @Column(name = "surname")
     private String surname;
+
+    @Column(name = "email")
     private String email;
-    private List<String> subsGenre = new ArrayList<>();;
-    private List<String> subsBands = new ArrayList<>();;
+
+    @ElementCollection
+    @Column(name = "subsGenre")
+    private List<String> subsGenre = new ArrayList<>();
+
+    @ElementCollection
+    @Column(name = "subsBands")
+    private List<String> subsBands = new ArrayList<>();
+
+    @Column(name = "typeOfUser")
     private String typeOfUser; // Band or Listener
 
     public User() {
     }
 
-    public User(int id, String name, String surname, List<String> subsGenre, List<String> subsBands, String typeOfUser,String email) {
+    public User(String id, String name, String surname, List<String> subsGenre, List<String> subsBands, String typeOfUser,String email) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -40,11 +69,11 @@ public class User {
         this.email = email;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

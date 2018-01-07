@@ -7,6 +7,7 @@ import org.eclipse.microprofile.faulttolerance.*;
 
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.ProcessingException;
@@ -26,44 +27,52 @@ import java.util.stream.Collectors;
 
 @Bulkhead
 @GroupKey("UsersBean")
+@ApplicationScoped
 public class UsersBean {
-    public static User getUserByEmail(String email){
-        return UsersDB.getUserByEmail(email);
+    @Inject
+    private UsersDB usersDB;
+
+    public User getUserByEmail(String email){
+        return usersDB.getUserByEmail(email);
     }
 
-    public static List<User> getUsers(){
-        return UsersDB.getUsers();
+    public List<User> getUsers(){
+        return usersDB.getUsers();
     }
 
-    public static boolean addUser(User user,Optional<URL> posts_url){
+    public boolean addUser(User user,Optional<URL> posts_url){
         if(user == null) return false;
         if(     (!(user.getEmail() == null)        && !user.getEmail().isEmpty()     ) &&
                 (!(user.getName() == null)         && !user.getName().isEmpty()      ) &&
                 (!(user.getSurname() == null)      && !user.getSurname().isEmpty()   ) &&
                 (!(user.getTypeOfUser() == null)   && !user.getTypeOfUser().isEmpty()) &&
                 (user.getTypeOfUser().equals("Band") || user.getTypeOfUser().equals("Listener")) &&
-                UsersDB.getUserByEmail(user.getEmail())==null
+                usersDB.getUserByEmail(user.getEmail())==null
                 ){
-            List<User> users=UsersDB.getUsers();
-            int new_id=users.get(users.size()-1).getId()+1;
-            if(user.getTypeOfUser().equals("Band")) {
-                if (!addNewUserPost(new_id, posts_url)) return false;
+            List<User> users=usersDB.getUsers();
+            User added_user = usersDB.addUser(user);
+            if(added_user!=null && added_user.getTypeOfUser().equals("Band")){
+                if (!addNewUserPost(added_user.getId(),posts_url)){
+                    usersDB.deleteUser(added_user.getId());
+                    return false;
+                }
             }
-            user.setId(new_id); // povečamo id za 1
-            UsersDB.addUser(user);
+
+            if(added_user==null) return false;
             return true;
         }
         return false;
+
     }
 
 
-    public static boolean deleteUserByEmail(String email,Optional<URL> posts_url){
-        User user=UsersDB.getUserByEmail(email);
+    public boolean deleteUserByEmail(String email,Optional<URL> posts_url){
+        User user=usersDB.getUserByEmail(email);
         if(user!=null) {
             if (user.getTypeOfUser().equals("Band")){
-                return (removeBandPost(user.getId(),posts_url) && UsersDB.deleteUser(user.getId()));
+                return (removeBandPost(user.getId(),posts_url) && usersDB.deleteUser(user.getId()));
             }
-            return UsersDB.deleteUser(user.getId());
+            return usersDB.deleteUser(user.getId());
 
         }
         return false;
@@ -74,9 +83,8 @@ public class UsersBean {
     @Timeout
     @Retry
     @Fallback(fallbackMethod = "postMSFallback")
-    private static boolean removeBandPost(int bandId_int,Optional<URL> posts_url){
+    private boolean removeBandPost(String bandId,Optional<URL> posts_url){
         Client httpClient = ClientBuilder.newClient();
-        String bandId = Integer.toString(bandId_int);
 
         if(posts_url.isPresent()){
             String url = posts_url.get().toString();
@@ -94,7 +102,7 @@ public class UsersBean {
         return false;
     }
 
-    private static boolean postMSFallback(){
+    private boolean postMSFallback(){
         return false;
     }
 
@@ -103,9 +111,9 @@ public class UsersBean {
     @Timeout
     @Retry
     @Fallback(fallbackMethod = "postMSFallback")
-    private static boolean addNewUserPost(int bandId_int,Optional<URL> posts_url){
+    private boolean addNewUserPost(String bandId,Optional<URL> posts_url){
         Client httpClient = ClientBuilder.newClient();
-        String bandId = Integer.toString(bandId_int);
+
 
         if(posts_url.isPresent()){
             String url = posts_url.get().toString();
@@ -124,16 +132,16 @@ public class UsersBean {
     }
 
 
-    public static List<User> getBands(){
-        List<User> allUsers=UsersDB.getUsers();
+    public List<User> getBands(){
+        List<User> allUsers=usersDB.getUsers();
 
         List<User> bands = allUsers.stream().filter(u -> u.getTypeOfUser().equals("Band")).collect(Collectors.toList());
 
         return bands;
     }
 
-    public static List<User> getListeners(){
-        List<User> allUsers=UsersDB.getUsers();
+    public List<User> getListeners(){
+        List<User> allUsers=usersDB.getUsers();
         List<User> listeners = allUsers.stream().filter(u -> u.getTypeOfUser().equals("Listener")).collect(Collectors.toList());
 
         return listeners;

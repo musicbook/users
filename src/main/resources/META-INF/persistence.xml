@@ -1,14 +1,14 @@
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
-    <persistence-unit name="posts-jpa" transaction-type="RESOURCE_LOCAL">
-        <non-jta-data-source>jdbc/PostsDS</non-jta-data-source>
+    <persistence-unit name="users-jpa" transaction-type="RESOURCE_LOCAL">
+        <non-jta-data-source>jdbc/UsersDS</non-jta-data-source>
 
-        <class>com.fri.musicbook.Post</class>
+        <class>com.fri.musicbook.User</class>
 
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="create"/>
             <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
             <property name="javax.persistence.sql-load-script-source"
-                      value="sql-scripts/init-posts.sql" />
+                      value="sql-scripts/init-users.sql" />
             <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
         </properties>
     </persistence-unit>

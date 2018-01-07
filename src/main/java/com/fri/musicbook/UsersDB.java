@@ -1,46 +1,58 @@
 package com.fri.musicbook;
 
+import javax.enterprise.context.RequestScoped;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
-
+@RequestScoped
 public class UsersDB {
-    private static List<User> users= new ArrayList<User>(){{
-        add(new User(0,"test","test",new ArrayList<>(),new ArrayList<>(),"Listener","test@musicbook.com"));
-        add(new User(1,"Jan","Šubelj",new ArrayList<>(),new ArrayList<>(),"Band","janS@musicbook.com"));
-        add(new User(2,"Jan","Blatnik",new ArrayList<>(),new ArrayList<>(),"Band","janB@musicbook.com"));
-        add(new User(3,"Alojzi","Škof",new ArrayList<>(),new ArrayList<>(),"Listener","alojtiS@lj.com"));
-        add(new User(4,"Andrej","Peterle",new ArrayList<>(),new ArrayList<>(),"Listener","andrejP@lj.com"));
-    }};
+    @PersistenceContext(unitName = "users-jpa")
+    private EntityManager em;
 
-    public static List<User> getUsers() {
-        return users;
+    public List<User> getUsers() {
+        Query query=em.createNamedQuery("users.getAll",User.class);
+        List<User> test = query.getResultList();
+        if(test==null) System.out.println("IM EMPTY");
+        return test;
     }
 
-    public static void addUser(User user){
-        users.add(user);
-    }
+    public User addUser(User user){
 
-    public static User getUser(int userId){
-        for(User user : users){
-            if(user.getId()==userId){
-                return user;
-            }
+        try {
+            beginTx();
+            em.persist(user);
+            commitTx();
+        } catch (Exception e) {
+            rollbackTx();
+            return null;
         }
-        return null;
+        return user;
     }
 
-    public static boolean deleteUser(int userId){
-        for(User user : users){
-            if(user.getId()==userId){
-                users.remove(user);
-                return true;
+    public User getUser(int userId){
+        User user = em.find(User.class,userId);
+        return user;
+    }
+
+    public boolean deleteUser(String userId){
+        User bandPost=em.find(User.class,userId);
+        if(bandPost!=null) {
+            try {
+                beginTx();
+                em.remove(bandPost);
+                commitTx();
+            } catch (Exception e) {
+                rollbackTx();
+                return false;
             }
-        }
+        }else return false;
 
-        return false;
+        return true;
     }
-
-    public static List<User> getUserByNameAndSurname(String name, String surname){
+/*
+    public List<User> getUserByNameAndSurname(String name, String surname){
         List<User> found_users = new ArrayList<>();
         for(User user : users){
             if(user.getName().equals(name) && user.getSurname().equals(surname)){
@@ -49,14 +61,27 @@ public class UsersDB {
         }
         return found_users;
     }
-
-    public static User getUserByEmail(String email){
-        for(User user : users){
-            if(user.getEmail().equals(email)){
-                return user;
-            }
-        }
+*/
+    public User getUserByEmail(String email){
+        Query query=em.createNamedQuery("users.getUserByEmail",User.class).setParameter("email",email);
+        List<User> test = query.getResultList();
+        if(test!=null && test.size()==1) return test.get(0);
         return null;
+    }
+
+    private void beginTx() {
+        if (!em.getTransaction().isActive())
+            em.getTransaction().begin();
+    }
+
+    private void commitTx() {
+        if (em.getTransaction().isActive())
+            em.getTransaction().commit();
+    }
+
+    private void rollbackTx() {
+        if (em.getTransaction().isActive())
+            em.getTransaction().rollback();
     }
 
 

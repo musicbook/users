@@ -31,16 +31,19 @@ public class UserResource {
     @DiscoverService("posts")
     private Optional<URL> posts_url;
 
+    @Inject
+    UsersBean usersBean;
+
     @GET
     public Response getAllUsers(){
-        List<User> users=UsersBean.getUsers();
+        List<User> users=usersBean.getUsers();
         return Response.ok(users).build();
     }
 
     @GET
     @Path("Bands")
     public Response getBands(){
-        List<User> bands=UsersBean.getBands();
+        List<User> bands=usersBean.getBands();
         if(bands==null) return Response.status(Response.Status.NOT_FOUND).build();
 
         return Response.ok(bands).build();
@@ -49,7 +52,7 @@ public class UserResource {
     @GET
     @Path("Listeners")
     public Response getListeners(){
-        List<User> listeners=UsersBean.getListeners();
+        List<User> listeners=usersBean.getListeners();
         if(listeners==null) return Response.status(Response.Status.NOT_FOUND).build();
 
         return Response.ok(listeners).build();
@@ -60,7 +63,7 @@ public class UserResource {
     @GET
     @Path("email/{email}")
     public Response getUserByEmail(@PathParam("email") String email){
-        User user=UsersBean.getUserByEmail(email);
+        User user=usersBean.getUserByEmail(email);
         if (user != null) return Response.ok(user).build();
 
         return Response.status(Response.Status.NOT_FOUND).build(); //entity("User not found with email: "+email)
@@ -68,7 +71,7 @@ public class UserResource {
 
     @POST
     public Response addUser(User user){
-        if(UsersBean.addUser(user,posts_url)){
+        if(usersBean.addUser(user,posts_url)){
 
             return Response.status(Response.Status.CREATED).entity(user).build();
         }
@@ -78,7 +81,7 @@ public class UserResource {
     @DELETE
     @Path("email/{email}")
     public Response deleteUserByEmail(@PathParam("email") String email){
-        if(UsersBean.deleteUserByEmail(email,posts_url)){
+        if(usersBean.deleteUserByEmail(email,posts_url)){
             return Response.ok().build();
         }
         return Response.status(Response.Status.CONFLICT).build();

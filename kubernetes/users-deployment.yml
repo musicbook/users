@@ -25,7 +25,7 @@ spec:
           - name: KUMULUZEE_VERSION
             value: 1.0.1
           - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
-            value: jdbc:postgresql://postgres-posts:5440/users
+            value: jdbc:postgresql://postgres-users:5440/users
           - name: KUMULUZEE_DATASOURCES0_USERNAME
             value: userdb
           - name: KUMULUZEE_DATASOURCES0_PASSWORD
@@ -38,9 +38,9 @@ spec:
         #resources:
          #limits:
           #cpu: 500m
-        #livenessProbe:
-         # httpGet:
-          #  path: /health
-           # port: 8080
-          #initialDelaySeconds: 5
-          #periodSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8090
+          initialDelaySeconds: 30
+          periodSeconds: 3
